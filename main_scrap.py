@@ -1,14 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pyautogui
 import random as rd
 import time
 import pandas as pd
 import re
-import pandas as pd
-
 
 def wait(duration='short'):
     if duration =='short':
@@ -19,13 +17,12 @@ def wait(duration='short'):
         return time.sleep(rd.randrange(9,12))
 
 
-username = '' #tulis username twitter disini
-
-password = '' #tulis password twitter disini
+username = 'ubscrap3' #tulis username twitter disini
+password = 'ubakrie123' #tulis password twitter disini
 
 # Proxy settings
 
-# http://free-proxy.cz/en/proxylist/country/SG/all/ping/all
+# http://free-proxy.cz
 proxy_ip = '20.24.43.214'
 proxy_port = '8123'
 
@@ -40,12 +37,14 @@ proxy_options = {
 }
 
 # Set up Chrome WebDriver with proxy options
-driver = webdriver.Chrome("C:\Program Files (x86)\chromedriver.exe", options=webdriver.ChromeOptions().add_experimental_option('proxy', proxy_options))
-
+driver = webdriver.Chrome(options=webdriver.ChromeOptions().add_experimental_option('proxy', proxy_options))
 driver.get(f'https://www.twitter.com')
-
 wait('medium')
 
+masuk_btn = driver.find_element(By.XPATH,'//*[@id="react-root"]/div/div/div[2]/main/div/div/div[1]/div[1]/div/div[3]/div[5]/a/div')
+masuk_btn.click()
+
+WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,'//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[5]/label/div/div[2]/div/input')))
 #find
 username_field = driver.find_element(By.XPATH,'//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[5]/label/div/div[2]/div/input')
 login_selanjutnya_button = driver.find_element(By.XPATH,'//*[@id="layers"]/div/div/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[6]/div')
@@ -76,13 +75,11 @@ for i in range(len(since_list)):
     until = until_list[i]
     since = since_list[i]
 
-    #query
-    search_query = f'("Global Warming" OR "Climate Change") lang:id until:{until} since:{since}'
     #scraptime
     scraptime = 200
 
     #path
-    driver.get(f'https://twitter.com/search?q=%22climate%20change%22%20OR%20%22perubahan%20iklim%22%20lang%3Aid%20since%3A{since}%20until%3A{until}&src=typed_query&f=live')
+    driver.get(f'https://twitter.com/search?q=perubahan%20iklim%20lang%3Aid%20since%3A{since}%20until%3A{until}&src=typed_query&f=live')
     wait()
     pyautogui.moveTo(383, 442)
 
@@ -129,7 +126,7 @@ for i in range(len(since_list)):
     if all_tweets != []:
         swr = 0 
         df_tweets = pd.DataFrame(all_tweets)
-        output_filename = f'tweets_climate_change_id_{since}_{until}.csv'
+        output_filename = f'tweets_perubahan_iklim_id_{since}_{until}.csv'
         df_tweets.to_csv(output_filename, index=False)
         print(f"Data saved to {output_filename} , length:{len(all_tweets)}")
     elif all_tweets == []:
@@ -138,10 +135,7 @@ for i in range(len(since_list)):
             break 
         swr = swr + 1
 
-
-        
-    
-    # Close the browser
+# Close the browser
 driver.quit()
 
 
